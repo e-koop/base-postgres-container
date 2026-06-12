@@ -1,0 +1,21 @@
+
+services:
+  postgres:
+    env_file:
+      - .env
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        POSTGRES_VERSION: ${POSTGRES_VERSION:?error}
+        PGDATA: ${PGDATA:?error}
+        POSTGRES_PORT: ${POSTGRES_PORT:?error}
+    container_name: postgres-container
+    restart: on-failure:5
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    volumes:
+      - postgres_data:${PGDATA:-/var/lib/postgresql/data}
+
+volumes:
+  postgres_data:
