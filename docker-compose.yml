@@ -10,6 +10,7 @@ services:
         POSTGRES_VERSION: ${POSTGRES_VERSION:?error}
         PGDATA: ${PGDATA:?error}
         POSTGRES_PORT: ${POSTGRES_PORT:?error}
+        CLUSTER_NAME: ${CLUSTER_NAME:?error}
     container_name: postgres-container
     restart: on-failure:5
     ports:
