@@ -75,7 +75,7 @@ RUN echo "Cluster Name: ${CLUSTER_NAME}, PostgreSQL Version: ${POSTGRES_VERSION}
 
 RUN if [ ! -s "${PGDATA}/PG_VERSION" ]; then \
         echo "[INIT] No database found in ${PGDATA}. Creating cluster..." &&\
-        pg_createcluster -d "${PGDATA}" "${POSTGRES_VERSION}" "${CLUSTER_NAME}"; \
+        pg_createcluster -p "${POSTGRES_PORT}" -d "${PGDATA}" "${POSTGRES_VERSION}" "${CLUSTER_NAME}"; \
     else \
         echo "[INIT] Existing database found in ${PGDATA}. Skipping creation."; \
     fi
