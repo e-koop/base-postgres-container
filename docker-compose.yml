@@ -1,4 +1,3 @@
-
 services:
   postgres:
     env_file:
@@ -17,6 +16,14 @@ services:
       - "${POSTGRES_PORT:-5432}:5432"
     volumes:
       - postgres_data:${PGDATA:-/var/lib/postgresql/data}
+    healthcheck:
+      # Docker Compose will use this for service health checks
+      test: [ "CMD-SHELL", "/usr/local/bin/healthcheck.sh" ]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+      start_period: 20s # Give PostgreSQL time to initialize
+      disable: false
 
 volumes:
   postgres_data:

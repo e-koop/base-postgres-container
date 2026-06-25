@@ -27,13 +27,13 @@ RUN apt-get update && \
     curl
 
 RUN apt-get install -y --no-install-recommends postgresql-common ca-certificates 
-   
+
 RUN install -d /usr/share/postgresql-common/pgdg 
 
 RUN curl -o /usr/share/postgresql-common/pgdg/apt.postgresql.org.asc --fail https://www.postgresql.org/media/keys/ACCC4CF8.asc
 
 RUN echo 'Types: deb deb-src\nURIs: https://apt.postgresql.org/pub/repos/apt\nSuites: jammy-pgdg\nArchitectures: amd64\nComponents: main\nSigned-By: /usr/share/postgresql-common/pgdg/apt.postgresql.org.asc' \
- > /etc/apt/sources.list.d/pgdg.sources
+    > /etc/apt/sources.list.d/pgdg.sources
 
 RUN apt-get update
 RUN apt-get -y install postgresql-${POSTGRES_VERSION} postgresql-contrib-${POSTGRES_VERSION}
@@ -67,6 +67,10 @@ USER postgres
 COPY --chown=postgres:postgres healthcheck.sh /usr/local/bin/healthcheck.sh
 RUN chmod +x /usr/local/bin/healthcheck.sh
 
+# Copy test script
+COPY --chown=postgres:postgres test.sh /usr/local/bin/test.sh
+RUN chmod +x /usr/local/bin/test.sh
+
 # Health check configuration
 HEALTHCHECK --interval=10s --timeout=5s --start-period=30s --retries=3 \
     CMD /usr/local/bin/healthcheck.sh
@@ -74,10 +78,10 @@ HEALTHCHECK --interval=10s --timeout=5s --start-period=30s --retries=3 \
 RUN echo "Cluster Name: ${CLUSTER_NAME}, PostgreSQL Version: ${POSTGRES_VERSION}, Data Directory: ${PGDATA}"
 
 RUN if [ ! -s "${PGDATA}/PG_VERSION" ]; then \
-        echo "[INIT] No database found in ${PGDATA}. Creating cluster..." &&\
-        pg_createcluster -p "${POSTGRES_PORT}" -d "${PGDATA}" "${POSTGRES_VERSION}" "${CLUSTER_NAME}"; \
+    echo "[INIT] No database found in ${PGDATA}. Creating cluster..." &&\
+    pg_createcluster -p "${POSTGRES_PORT}" -d "${PGDATA}" "${POSTGRES_VERSION}" "${CLUSTER_NAME}"; \
     else \
-        echo "[INIT] Existing database found in ${PGDATA}. Skipping creation."; \
+    echo "[INIT] Existing database found in ${PGDATA}. Skipping creation."; \
     fi
 
 ENTRYPOINT ["/bin/sh", "-c", "pg_ctlcluster --foreground ${POSTGRES_VERSION} ${CLUSTER_NAME} start"]
